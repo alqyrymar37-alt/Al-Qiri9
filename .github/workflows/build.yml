@@ -1,24 +1,22 @@
 name: Build APK
-on:
-  push:
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q AlQiri.zip
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.7
       - name: Build
-        working-directory: AlQiri
-        run: gradle assembleDebug --no-daemon
+        run: |
+          if [ -d "Al-Qiri9" ]; then cd Al-Qiri9; fi
+          if [ -d "AlQiri" ]; then cd AlQiri; fi
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: AlQiri-apk
-          path: AlQiri/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app/build/outputs/apk/debug/*.apk
